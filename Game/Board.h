@@ -6,13 +6,8 @@
 #include "../Models/Move.h"
 #include "../Models/Project_path.h"
 
-#ifdef __APPLE__
-    #include <SDL2/SDL.h>
-    #include <SDL2/SDL_image.h>
-#else
-    #include <SDL.h>
-    #include <SDL_image.h>
-#endif
+#include <SDL.h>
+#include <SDL_image.h>
 
 using namespace std;
 
@@ -24,7 +19,7 @@ public:
     {
     }
 
-    // draws start board
+    // отрисовываем начальную доску
     int start_draw()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -187,7 +182,7 @@ public:
         rerender();
     }
 
-    // use if window size changed
+    // если размер окна изменен
     void reset_window_size()
     {
         SDL_GetRendererOutputSize(ren, &W, &H);
@@ -220,7 +215,7 @@ private:
         history_mtx.push_back(mtx);
         history_beat_series.push_back(beat_series);
     }
-    // function to make start matrix
+    // function создаем начальную матрицу
     void make_start_mtx()
     {
         for (POS_T i = 0; i < 8; ++i)
@@ -237,14 +232,14 @@ private:
         add_history();
     }
 
-    // function that re-draw all the textures
+    // функция прорисовки текстур
     void rerender()
     {
-        // draw board
+        // отрисовать доску
         SDL_RenderClear(ren);
         SDL_RenderCopy(ren, board, NULL, NULL);
 
-        // draw pieces
+        // отрисовка шашек
         for (POS_T i = 0; i < 8; ++i)
         {
             for (POS_T j = 0; j < 8; ++j)
@@ -269,7 +264,7 @@ private:
             }
         }
 
-        // draw hilight
+        // отрисовка подсветки
         SDL_SetRenderDrawColor(ren, 0, 255, 0, 0);
         const double scale = 2.5;
         SDL_RenderSetScale(ren, scale, scale);
@@ -285,7 +280,7 @@ private:
             }
         }
 
-        // draw active
+        // отрисовка активного элемента
         if (active_x != -1)
         {
             SDL_SetRenderDrawColor(ren, 255, 0, 0, 0);
@@ -295,13 +290,13 @@ private:
         }
         SDL_RenderSetScale(ren, 1, 1);
 
-        // draw arrows
+        // отрисовка стрелки
         SDL_Rect rect_left{ W / 40, H / 40, W / 15, H / 15 };
         SDL_RenderCopy(ren, back, NULL, &rect_left);
         SDL_Rect replay_rect{ W * 109 / 120, H / 40, W / 15, H / 15 };
         SDL_RenderCopy(ren, replay, NULL, &replay_rect);
 
-        // draw result
+        // отрисовка финал игры
         if (game_results != -1)
         {
             string result_path = draw_path;
@@ -321,7 +316,7 @@ private:
         }
 
         SDL_RenderPresent(ren);
-        // next rows for mac os
+        // след строк. для mac os
         SDL_Delay(10);
         SDL_Event windowEvent;
         SDL_PollEvent(&windowEvent);
@@ -336,13 +331,13 @@ private:
   public:
     int W = 0;
     int H = 0;
-    // history of boards
+    // история изменений
     vector<vector<vector<POS_T>>> history_mtx;
 
   private:
     SDL_Window *win = nullptr;
     SDL_Renderer *ren = nullptr;
-    // textures
+    // текстуры
     SDL_Texture *board = nullptr;
     SDL_Texture *w_piece = nullptr;
     SDL_Texture *b_piece = nullptr;
@@ -350,7 +345,7 @@ private:
     SDL_Texture *b_queen = nullptr;
     SDL_Texture *back = nullptr;
     SDL_Texture *replay = nullptr;
-    // texture files names
+    // файлы текстур
     const string textures_path = project_path + "Textures/";
     const string board_path = textures_path + "board.png";
     const string piece_white_path = textures_path + "piece_white.png";
@@ -362,15 +357,15 @@ private:
     const string draw_path = textures_path + "draw.png";
     const string back_path = textures_path + "back.png";
     const string replay_path = textures_path + "replay.png";
-    // coordinates of chosen cell
+    // координаты выбранной ячейки
     int active_x = -1, active_y = -1;
-    // game result if exist
+    // реузльтат, если выход
     int game_results = -1;
-    // matrix of possible moves
+    // матрица доски 8х8
     vector<vector<bool>> is_highlighted_ = vector<vector<bool>>(8, vector<bool>(8, 0));
-    // matrix of possible moves
-    // 1 - white, 2 - black, 3 - white queen, 4 - black queen
+    // матрица возможных ходов
+    // 1 - белые, 2 - черные, 3 - белая королева, 4 - черная королева
     vector<vector<POS_T>> mtx = vector<vector<POS_T>>(8, vector<POS_T>(8, 0));
-    // series of beats for each move
+    // серия ударов для каждого движения
     vector<int> history_beat_series;
 };

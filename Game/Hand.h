@@ -1,11 +1,13 @@
 #pragma once
+
+#include <SDL.h>
 #include <tuple>
 
 #include "../Models/Move.h"
 #include "../Models/Response.h"
 #include "Board.h"
 
-// methods for hands
+// методы обработки событий кликов/нажатий
 class Hand
 {
   public:
@@ -20,8 +22,9 @@ class Hand
         int xc = -1, yc = -1;
         while (true)
         {
-            if (SDL_PollEvent(&windowEvent))
+            if (SDL_PollEvent(&windowEvent)) //ожидаем клик
             {
+                //обработка событий 
                 switch (windowEvent.type)
                 {
                 case SDL_QUIT:
@@ -61,9 +64,12 @@ class Hand
                     break;
             }
         }
+        //если нажатие было - возвращаем response
         return {resp, xc, yc};
     }
 
+    //функционал ожидания
+    //используется в конце игры - или переиграть или выход
     Response wait() const
     {
         SDL_Event windowEvent;
