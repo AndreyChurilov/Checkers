@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -19,7 +19,7 @@ public:
     {
     }
 
-    // отрисовываем начальную доску
+    // РѕС‚СЂРёСЃРѕРІС‹РІР°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РґРѕСЃРєСѓ
     int start_draw()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -182,7 +182,7 @@ public:
         rerender();
     }
 
-    // если размер окна изменен
+    // РµСЃР»Рё СЂР°Р·РјРµСЂ РѕРєРЅР° РёР·РјРµРЅРµРЅ
     void reset_window_size()
     {
         SDL_GetRendererOutputSize(ren, &W, &H);
@@ -215,7 +215,7 @@ private:
         history_mtx.push_back(mtx);
         history_beat_series.push_back(beat_series);
     }
-    // function создаем начальную матрицу
+    // function СЃРѕР·РґР°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РјР°С‚СЂРёС†Сѓ
     void make_start_mtx()
     {
         for (POS_T i = 0; i < 8; ++i)
@@ -232,14 +232,14 @@ private:
         add_history();
     }
 
-    // функция прорисовки текстур
+    // С„СѓРЅРєС†РёСЏ РїСЂРѕСЂРёСЃРѕРІРєРё С‚РµРєСЃС‚СѓСЂ
     void rerender()
     {
-        // отрисовать доску
+        // РѕС‚СЂРёСЃРѕРІР°С‚СЊ РґРѕСЃРєСѓ
         SDL_RenderClear(ren);
         SDL_RenderCopy(ren, board, NULL, NULL);
 
-        // отрисовка шашек
+        // РѕС‚СЂРёСЃРѕРІРєР° С€Р°С€РµРє
         for (POS_T i = 0; i < 8; ++i)
         {
             for (POS_T j = 0; j < 8; ++j)
@@ -264,7 +264,7 @@ private:
             }
         }
 
-        // отрисовка подсветки
+        // РѕС‚СЂРёСЃРѕРІРєР° РїРѕРґСЃРІРµС‚РєРё
         SDL_SetRenderDrawColor(ren, 0, 255, 0, 0);
         const double scale = 2.5;
         SDL_RenderSetScale(ren, scale, scale);
@@ -280,7 +280,7 @@ private:
             }
         }
 
-        // отрисовка активного элемента
+        // РѕС‚СЂРёСЃРѕРІРєР° Р°РєС‚РёРІРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
         if (active_x != -1)
         {
             SDL_SetRenderDrawColor(ren, 255, 0, 0, 0);
@@ -290,13 +290,13 @@ private:
         }
         SDL_RenderSetScale(ren, 1, 1);
 
-        // отрисовка стрелки
+        // РѕС‚СЂРёСЃРѕРІРєР° СЃС‚СЂРµР»РєРё
         SDL_Rect rect_left{ W / 40, H / 40, W / 15, H / 15 };
         SDL_RenderCopy(ren, back, NULL, &rect_left);
         SDL_Rect replay_rect{ W * 109 / 120, H / 40, W / 15, H / 15 };
         SDL_RenderCopy(ren, replay, NULL, &replay_rect);
 
-        // отрисовка финал игры
+        // РѕС‚СЂРёСЃРѕРІРєР° С„РёРЅР°Р» РёРіСЂС‹
         if (game_results != -1)
         {
             string result_path = draw_path;
@@ -316,7 +316,7 @@ private:
         }
 
         SDL_RenderPresent(ren);
-        // след строк. для mac os
+        // СЃР»РµРґ СЃС‚СЂРѕРє. РґР»СЏ mac os
         SDL_Delay(10);
         SDL_Event windowEvent;
         SDL_PollEvent(&windowEvent);
@@ -331,13 +331,13 @@ private:
   public:
     int W = 0;
     int H = 0;
-    // история изменений
+    // РёСЃС‚РѕСЂРёСЏ РёР·РјРµРЅРµРЅРёР№
     vector<vector<vector<POS_T>>> history_mtx;
 
   private:
     SDL_Window *win = nullptr;
     SDL_Renderer *ren = nullptr;
-    // текстуры
+    // С‚РµРєСЃС‚СѓСЂС‹
     SDL_Texture *board = nullptr;
     SDL_Texture *w_piece = nullptr;
     SDL_Texture *b_piece = nullptr;
@@ -345,7 +345,7 @@ private:
     SDL_Texture *b_queen = nullptr;
     SDL_Texture *back = nullptr;
     SDL_Texture *replay = nullptr;
-    // файлы текстур
+    // С„Р°Р№Р»С‹ С‚РµРєСЃС‚СѓСЂ
     const string textures_path = project_path + "Textures/";
     const string board_path = textures_path + "board.png";
     const string piece_white_path = textures_path + "piece_white.png";
@@ -357,15 +357,15 @@ private:
     const string draw_path = textures_path + "draw.png";
     const string back_path = textures_path + "back.png";
     const string replay_path = textures_path + "replay.png";
-    // координаты выбранной ячейки
+    // РєРѕРѕСЂРґРёРЅР°С‚С‹ РІС‹Р±СЂР°РЅРЅРѕР№ СЏС‡РµР№РєРё
     int active_x = -1, active_y = -1;
-    // реузльтат, если выход
+    // СЂРµСѓР·Р»СЊС‚Р°С‚, РµСЃР»Рё РІС‹С…РѕРґ
     int game_results = -1;
-    // матрица доски 8х8
+    // РјР°С‚СЂРёС†Р° РґРѕСЃРєРё 8С…8
     vector<vector<bool>> is_highlighted_ = vector<vector<bool>>(8, vector<bool>(8, 0));
-    // матрица возможных ходов
-    // 1 - белые, 2 - черные, 3 - белая королева, 4 - черная королева
+    // РјР°С‚СЂРёС†Р° РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ
+    // 1 - Р±РµР»С‹Рµ, 2 - С‡РµСЂРЅС‹Рµ, 3 - Р±РµР»Р°СЏ РєРѕСЂРѕР»РµРІР°, 4 - С‡РµСЂРЅР°СЏ РєРѕСЂРѕР»РµРІР°
     vector<vector<POS_T>> mtx = vector<vector<POS_T>>(8, vector<POS_T>(8, 0));
-    // серия ударов для каждого движения
+    // СЃРµСЂРёСЏ СѓРґР°СЂРѕРІ РґР»СЏ РєР°Р¶РґРѕРіРѕ РґРІРёР¶РµРЅРёСЏ
     vector<int> history_beat_series;
 };

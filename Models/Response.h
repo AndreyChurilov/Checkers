@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 
-enum class Response
+enum class Response //enum class
 {
-    OK,
-    BACK,
-    REPLAY,
-    QUIT,
-    CELL
+    OK,      //ход завершен
+    BACK,    //шаг назад
+    REPLAY,  //начать игру заново
+    QUIT,    //выход
+    CELL     //клик по клетке   
 };

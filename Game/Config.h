@@ -1,10 +1,10 @@
-#pragma once
+п»ї#pragma once
 #include <fstream>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
 #include "../Models/Project_path.h"
-//класс-обработчик
+//РєР»Р°СЃСЃ-РѕР±СЂР°Р±РѕС‚С‡РёРє
 class Config
 {
   public:
@@ -12,15 +12,15 @@ class Config
     {
         reload();
     }
-    //при создании настройки загружаются из settings.json и сохраняются в config
+    //РїСЂРё СЃРѕР·РґР°РЅРёРё РЅР°СЃС‚СЂРѕР№РєРё Р·Р°РіСЂСѓР¶Р°СЋС‚СЃСЏ РёР· settings.json Рё СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ config
     void reload()
     {
         std::ifstream fin(project_path + "settings.json");
         fin >> config;
         fin.close();
     }
-    //оператор "()" позволяющий получать по setting_dir и setting_name нужную настройку
-    //например макс кол-во ходов: const int Max_turns = config("Game", "MaxNumTurns"); 
+    //РѕРїРµСЂР°С‚РѕСЂ "()" РїРѕР·РІРѕР»СЏСЋС‰РёР№ РїРѕР»СѓС‡Р°С‚СЊ РїРѕ setting_dir Рё setting_name РЅСѓР¶РЅСѓСЋ РЅР°СЃС‚СЂРѕР№РєСѓ
+    //РЅР°РїСЂРёРјРµСЂ РјР°РєСЃ РєРѕР»-РІРѕ С…РѕРґРѕРІ: const int Max_turns = config("Game", "MaxNumTurns"); 
     auto operator()(const string &setting_dir, const string &setting_name) const
     {
         return config[setting_dir][setting_name];

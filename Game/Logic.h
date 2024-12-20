@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <random>
 #include <vector>
 
@@ -15,20 +15,20 @@ class Logic
     {
         optimization = (*config)("Bot", "Optimization");
     }
-    //поиск лучшего хода для бота - возвращает вектор ходов или побитий
+    //РїРѕРёСЃРє Р»СѓС‡С€РµРіРѕ С…РѕРґР° РґР»СЏ Р±РѕС‚Р° - РІРѕР·РІСЂР°С‰Р°РµС‚ РІРµРєС‚РѕСЂ С…РѕРґРѕРІ РёР»Рё РїРѕР±РёС‚РёР№
     vector<move_pos> find_best_turns(const bool color);
 
 private:
-    //поиск первой последовательности ходов
+    //РїРѕРёСЃРє РїРµСЂРІРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё С…РѕРґРѕРІ
     double find_first_best_turn(vector<vector<POS_T>> mtx, const bool color, const POS_T x, const POS_T y, size_t state,
         double alpha = -1);
 
-    //рекурсивная фун-я просчета от хода игрока на n-ходов
+    //СЂРµРєСѓСЂСЃРёРІРЅР°СЏ С„СѓРЅ-СЏ РїСЂРѕСЃС‡РµС‚Р° РѕС‚ С…РѕРґР° РёРіСЂРѕРєР° РЅР° n-С…РѕРґРѕРІ
     double find_best_turns_rec(vector<vector<POS_T>> mtx, const bool color, const size_t depth, double alpha = -1,
         double beta = INF + 1, const POS_T x = -1, const POS_T y = -1);
 
-    //производит ход на матрице и возвращает копию матрицы
-    //нужна для передачи матрицы в рекурсию после хода
+    //РїСЂРѕРёР·РІРѕРґРёС‚ С…РѕРґ РЅР° РјР°С‚СЂРёС†Рµ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РјР°С‚СЂРёС†С‹
+    //РЅСѓР¶РЅР° РґР»СЏ РїРµСЂРµРґР°С‡Рё РјР°С‚СЂРёС†С‹ РІ СЂРµРєСѓСЂСЃРёСЋ РїРѕСЃР»Рµ С…РѕРґР°
     vector<vector<POS_T>> make_turn(vector<vector<POS_T>> mtx, move_pos turn) const
     {
         if (turn.xb != -1)
@@ -39,7 +39,7 @@ private:
         mtx[turn.x][turn.y] = 0;
         return mtx;
     }
-    //функция подсчета фигур
+    //С„СѓРЅРєС†РёСЏ РїРѕРґСЃС‡РµС‚Р° С„РёРіСѓСЂ
     double calc_score(const vector<vector<POS_T>> &mtx, const bool first_bot_color) const
     {
         // color - who is max player
@@ -48,10 +48,10 @@ private:
         {
             for (POS_T j = 0; j < 8; ++j)
             {
-                w += (mtx[i][j] == 1); //б пешек
-                wq += (mtx[i][j] == 3); //б королев
-                b += (mtx[i][j] == 2);  //ч пешек
-                bq += (mtx[i][j] == 4); //ч королев
+                w += (mtx[i][j] == 1); //Р± РїРµС€РµРє
+                wq += (mtx[i][j] == 3); //Р± РєРѕСЂРѕР»РµРІ
+                b += (mtx[i][j] == 2);  //С‡ РїРµС€РµРє
+                bq += (mtx[i][j] == 4); //С‡ РєРѕСЂРѕР»РµРІ
                 if (scoring_mode == "NumberAndPotential")
                 {
                     w += 0.05 * (mtx[i][j] == 1) * (7 - i);
@@ -68,7 +68,7 @@ private:
             return INF;
         if (b + bq == 0)
             return 0;
-        int q_coef = 4; //параметр вес королевы важна как 4 пешки
+        int q_coef = 4; //РїР°СЂР°РјРµС‚СЂ РІРµСЃ РєРѕСЂРѕР»РµРІС‹ РІР°Р¶РЅР° РєР°Рє 4 РїРµС€РєРё
         if (scoring_mode == "NumberAndPotential")
         {
             q_coef = 5; 
@@ -77,7 +77,7 @@ private:
     }
 
 public:
-    //метод поиска ходов
+    //РјРµС‚РѕРґ РїРѕРёСЃРєР° С…РѕРґРѕРІ
     void find_turns(const bool color)
     {
         find_turns(color, board->get_board());
@@ -89,19 +89,19 @@ public:
     }
 
 private:
-    //поиск возможного хода
+    //РїРѕРёСЃРє РІРѕР·РјРѕР¶РЅРѕРіРѕ С…РѕРґР°
     void find_turns(const bool color, const vector<vector<POS_T>> &mtx)
     {
         vector<move_pos> res_turns;
         bool have_beats_before = false;
-        //проход по клеткам
+        //РїСЂРѕС…РѕРґ РїРѕ РєР»РµС‚РєР°Рј
         for (POS_T i = 0; i < 8; ++i)
         {
             for (POS_T j = 0; j < 8; ++j)
             {
-                if (mtx[i][j] && mtx[i][j] % 2 != color) //если цвета совпадают
+                if (mtx[i][j] && mtx[i][j] % 2 != color) //РµСЃР»Рё С†РІРµС‚Р° СЃРѕРІРїР°РґР°СЋС‚
                 {
-                    find_turns(i, j, mtx); //от клетки пытаемся найти все возможные ходы
+                    find_turns(i, j, mtx); //РѕС‚ РєР»РµС‚РєРё РїС‹С‚Р°РµРјСЃСЏ РЅР°Р№С‚Рё РІСЃРµ РІРѕР·РјРѕР¶РЅС‹Рµ С…РѕРґС‹
                     if (have_beats && !have_beats_before)
                     {
                         have_beats_before = true;
@@ -118,18 +118,18 @@ private:
         shuffle(turns.begin(), turns.end(), rand_eng);
         have_beats = have_beats_before;
     }
-    //поиск возможного хода от позиции
+    //РїРѕРёСЃРє РІРѕР·РјРѕР¶РЅРѕРіРѕ С…РѕРґР° РѕС‚ РїРѕР·РёС†РёРё
     void find_turns(const POS_T x, const POS_T y, const vector<vector<POS_T>> &mtx)
     {
         turns.clear();
         have_beats = false;
         POS_T type = mtx[x][y];
-        // логика побитий для разных типов фигур
+        // Р»РѕРіРёРєР° РїРѕР±РёС‚РёР№ РґР»СЏ СЂР°Р·РЅС‹С… С‚РёРїРѕРІ С„РёРіСѓСЂ
         switch (type)
         {
         case 1:
         case 2:
-            // пешка бел или чер
+            // РїРµС€РєР° Р±РµР» РёР»Рё С‡РµСЂ
             for (POS_T i = x - 2; i <= x + 2; i += 4)
             {
                 for (POS_T j = y - 2; j <= y + 2; j += 4)
@@ -144,7 +144,7 @@ private:
             }
             break;
         default:
-            // королева
+            // РєРѕСЂРѕР»РµРІР°
             for (POS_T i = -1; i <= 1; i += 2)
             {
                 for (POS_T j = -1; j <= 1; j += 2)
@@ -170,7 +170,7 @@ private:
             }
             break;
         }
-        // варианты ходов для разных типов
+        // РІР°СЂРёР°РЅС‚С‹ С…РѕРґРѕРІ РґР»СЏ СЂР°Р·РЅС‹С… С‚РёРїРѕРІ
         if (!turns.empty())
         {
             have_beats = true;
@@ -180,7 +180,7 @@ private:
         {
         case 1:
         case 2:
-            // пешка чер или бел
+            // РїРµС€РєР° С‡РµСЂ РёР»Рё Р±РµР»
             {
                 POS_T i = ((type % 2) ? x - 1 : x + 1);
                 for (POS_T j = y - 1; j <= y + 1; j += 2)
@@ -192,7 +192,7 @@ private:
                 break;
             }
         default:
-            // королева
+            // РєРѕСЂРѕР»РµРІР°
             for (POS_T i = -1; i <= 1; i += 2)
             {
                 for (POS_T j = -1; j <= 1; j += 2)
@@ -210,22 +210,22 @@ private:
     }
 
   public:
-    //вектор ходов, которые находятся с помощью find_turns
+    //РІРµРєС‚РѕСЂ С…РѕРґРѕРІ, РєРѕС‚РѕСЂС‹Рµ РЅР°С…РѕРґСЏС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ find_turns
     vector<move_pos> turns;
-    //флаг отвечает, является ли ход побитием
+    //С„Р»Р°Рі РѕС‚РІРµС‡Р°РµС‚, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С…РѕРґ РїРѕР±РёС‚РёРµРј
     bool have_beats; 
-    //максимальная глубина
+    //РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РіР»СѓР±РёРЅР°
     int Max_depth;
 
   private:
     default_random_engine rand_eng;
-    //оптимизация
+    //РѕРїС‚РёРјРёР·Р°С†РёСЏ
     string optimization; 
-    //вектор ходов и вектор следующих лучших состояний
-    //нужны для восстановления последовательности ходов
+    //РІРµРєС‚РѕСЂ С…РѕРґРѕРІ Рё РІРµРєС‚РѕСЂ СЃР»РµРґСѓСЋС‰РёС… Р»СѓС‡С€РёС… СЃРѕСЃС‚РѕСЏРЅРёР№
+    //РЅСѓР¶РЅС‹ РґР»СЏ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё С…РѕРґРѕРІ
     vector<move_pos> next_move;
     vector<int> next_best_state;
-    //указатели на классы доски и конфигурации
+    //СѓРєР°Р·Р°С‚РµР»Рё РЅР° РєР»Р°СЃСЃС‹ РґРѕСЃРєРё Рё РєРѕРЅС„РёРіСѓСЂР°С†РёРё
     Board *board;  
     Config *config; 
 };

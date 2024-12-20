@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include <SDL.h>
 #include <tuple>
@@ -7,7 +7,7 @@
 #include "../Models/Response.h"
 #include "Board.h"
 
-// методы обработки событий кликов/нажатий
+// РјРµС‚РѕРґС‹ РѕР±СЂР°Р±РѕС‚РєРё СЃРѕР±С‹С‚РёР№ РєР»РёРєРѕРІ/РЅР°Р¶Р°С‚РёР№
 class Hand
 {
   public:
@@ -22,9 +22,9 @@ class Hand
         int xc = -1, yc = -1;
         while (true)
         {
-            if (SDL_PollEvent(&windowEvent)) //ожидаем клик
+            if (SDL_PollEvent(&windowEvent)) //РѕР¶РёРґР°РµРј РєР»РёРє
             {
-                //обработка событий 
+                //РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёР№ 
                 switch (windowEvent.type)
                 {
                 case SDL_QUIT:
@@ -64,12 +64,12 @@ class Hand
                     break;
             }
         }
-        //если нажатие было - возвращаем response
+        //РµСЃР»Рё РЅР°Р¶Р°С‚РёРµ Р±С‹Р»Рѕ - РІРѕР·РІСЂР°С‰Р°РµРј response
         return {resp, xc, yc};
     }
 
-    //функционал ожидания
-    //используется в конце игры - или переиграть или выход
+    //С„СѓРЅРєС†РёРѕРЅР°Р» РѕР¶РёРґР°РЅРёСЏ
+    //РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ РєРѕРЅС†Рµ РёРіСЂС‹ - РёР»Рё РїРµСЂРµРёРіСЂР°С‚СЊ РёР»Рё РІС‹С…РѕРґ
     Response wait() const
     {
         SDL_Event windowEvent;
