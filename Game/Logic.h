@@ -16,16 +16,138 @@ class Logic
         optimization = (*config)("Bot", "Optimization");
     }
     //поиск лучшего хода для бота - возвращает вектор ходов или побитий
-    vector<move_pos> find_best_turns(const bool color);
+    vector<move_pos> find_best_turns(const bool color) {
+        //почистить вектора 
+        next_move.clear();
+        next_best_state.clear();
+        //заполнить вектора лучшими состояниями: 
+        //мастрица, чей ход - цвет, координаты - если начинаем кем то бить, состояние, альфа границп
+        find_first_best_turn(board->get_board(), color, -1, -1, 0);
+        
+        vector<move_pos> res;
+        int state = 0; //начальное состояние
+        do {
+            res.push_back(next_move[state]);
+            //переход в след состояние
+            state = next_best_state[state]; 
+        } while (state != -1 && next_move[state].x != -1); //после серии побитий нет возможных ходов
+        return res;
+    }
 
 private:
     //поиск первой последовательности ходов
     double find_first_best_turn(vector<vector<POS_T>> mtx, const bool color, const POS_T x, const POS_T y, size_t state,
-        double alpha = -1);
+        double alpha = -1) {
+        //начальные состояния
+        next_move.emplace_back(-1, -1, -1, -1);
+        next_best_state.push_back(-1);
+        //найти все возможные ходы, если кого-то бьем
+        if (state != 0) {
+            find_turns(x, y, mtx);
+        }
+        //сделать копии доступных ходов и побитий
+        auto now_turns = turns;
+        auto now_have_beats = have_beats;
+        //возможные комбинации случаев "кого то бьем" и "статус 0"
+        //сделали серию побитий и нет ходов (нечего бить)
+        if (!now_have_beats && state != 0) {
+            //поиск наилучшего в рекурсии
+            return find_best_turns_rec(mtx, 1 - color, 0, alpha); 
+        }
+        //наилучший результат на текущий момент
+        double best_score = -1;
+        //если можем кого-то побить или есть ход
+        for (auto turn : now_turns) {
+            //следующее состояние
+            size_t new_state = next_move.size();
+            //текущий результат
+            double score;
+            //есть кого побить
+            if (now_have_beats) {
+                score = find_first_best_turn(make_turn(mtx, turn), color, turn.x2, turn.y2, new_state, best_score);
+            }
+            //есть ход
+            else {
+                score = find_best_turns_rec(make_turn(mtx, turn), 1 - color, 0, best_score);
+            }
+            //максимизация
+            if (score > best_score) {
+                //нашли новый оптимум - берем первый
+                best_score = score;
+                next_move[state] = turn;
+                next_best_state[state] = (now_have_beats ? new_state : -1);
+            }
 
-    //рекурсивная фун-я просчета от хода игрока на n-ходов
+        }
+        return best_score;
+    }
+
+    //поиск лучшего хода: рекурсивная фун-я просчета от хода игрока на n-ходов
     double find_best_turns_rec(vector<vector<POS_T>> mtx, const bool color, const size_t depth, double alpha = -1,
-        double beta = INF + 1, const POS_T x = -1, const POS_T y = -1);
+        double beta = INF + 1, const POS_T x = -1, const POS_T y = -1) {
+        //проверить глубину = max - выход из рекурсии
+        if (depth == Max_depth) {
+            return calc_score(mtx, (depth % 2 == color));
+        }
+        //если есть серия побитий
+        if (x != -1) {
+            find_turns(x, y, mtx);
+        }
+        //есть цвет - найти все возможные ходы
+        else {
+            find_turns(color, mtx);
+        }
+        auto now_turns = turns;
+        auto now_have_beats = have_beats;
+        //елси не чему бить и была серия побитий
+        if (!now_have_beats && x != 0) {
+            //поиск наилучшего в рекурсии
+            return find_best_turns_rec(mtx, 1 - color, depth + 1, alpha, beta);
+        }
+        
+        //если ходов нет - тот чей ход - проиграл: 0 - мы, INF - соперник
+        if (turns.empty()) {
+            return (depth % 2 ? 0 : INF);
+        }
+
+        //поддержка минимума и максимума
+        double min_score = INF + 1;
+        double max_score = -1;
+        for (auto turn : now_turns) {
+            double score;
+            //если есть подитие
+            if (now_have_beats) {
+                score = find_best_turns_rec(make_turn(mtx, turn), color, depth, alpha, beta, turn.x2, turn.y2);
+            }
+            //если побитий нет - переход хода (смена цвета) и меняется глубина
+            else {
+                score = find_best_turns_rec(make_turn(mtx, turn), 1 - color, depth + 1, alpha, beta);
+            }
+            //обновление min и max
+            min_score = min(min_score, score);
+            max_score = max(max_score, score);
+            //альфа-бета отсечение
+            //если ходим мы - максимизация
+            if (depth % 2) {
+                alpha = max(alpha, max_score);
+            }
+            //ход соперника - минимизация
+            else {
+                beta = min(beta, min_score);
+            }
+            //оптимизация O1 - альфа и бета строгие
+            if (optimization != "O0" && alpha > beta) {
+                break; 
+            }
+            //оптимизация O2 - альфа = бета 
+            if (optimization == "O2" && alpha == beta) {
+                return(depth % 2 ? max_score + 1: min_score - 1);
+            }
+        }
+
+        //если depth % 2 = 1 - наш ход - максимизация, если бот - мниммизация
+        return(depth % 2 ? max_score : min_score);
+    }
 
     //производит ход на матрице и возвращает копию матрицы
     //нужна для передачи матрицы в рекурсию после хода
@@ -39,7 +161,7 @@ private:
         mtx[turn.x][turn.y] = 0;
         return mtx;
     }
-    //функция подсчета фигур
+    //функция оценки состояний - просчет фигур
     double calc_score(const vector<vector<POS_T>> &mtx, const bool first_bot_color) const
     {
         // color - who is max player
@@ -52,11 +174,6 @@ private:
                 wq += (mtx[i][j] == 3); //б королев
                 b += (mtx[i][j] == 2);  //ч пешек
                 bq += (mtx[i][j] == 4); //ч королев
-                if (scoring_mode == "NumberAndPotential")
-                {
-                    w += 0.05 * (mtx[i][j] == 1) * (7 - i);
-                    b += 0.05 * (mtx[i][j] == 2) * (i);
-                }
             }
         }
         if (!first_bot_color)
@@ -69,10 +186,6 @@ private:
         if (b + bq == 0)
             return 0;
         int q_coef = 4; //параметр вес королевы важна как 4 пешки
-        if (scoring_mode == "NumberAndPotential")
-        {
-            q_coef = 5; 
-        }
         return (b + bq * q_coef) / (w + wq * q_coef);
     }
 
